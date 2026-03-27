@@ -1,0 +1,43 @@
+/* スクロールバー非表示 */
+#selectedList::-webkit-scrollbar, 
+#searchSuggestion::-webkit-scrollbar { display: none; }
+#selectedList, #searchSuggestion { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* 独自デザイン：グラデーション枠線 */
+.gradient-border { 
+  border: 4px solid; 
+  border-image: linear-gradient(90deg, rgb(161,193,44), rgb(44,161,193)) 1; 
+  border-radius: 0.5rem; 
+}
+
+.hover-gradient:hover { 
+  background: linear-gradient(90deg, rgb(207,238,207), rgb(207,238,238)); 
+}
+
+/* 検索サジェストの配置 */
+#searchSuggestion {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+/* ローディング画面 */
+#loadingOverlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(255,255,255,0.8); 
+  display: flex; justify-content: center; align-items: center; 
+  z-index: 50; font-size: 1.5rem; font-weight: bold; color: rgb(66,66,66);
+}
+
+/* モバイル最適化（16px確保でズーム防止） */
+@media screen and (max-width: 640px) {
+  #searchInput, #categoryFilter, #selectedList input, #searchSuggestion div { 
+    font-size: 16px !important; 
+  }
+  body { font-size: 0.85rem; }
+  h1 { font-size: 1.5rem !important; }
+  #totalWeight { font-size: 2rem !important; }
+  .gradient-border { border-width: 3px; }
+}
