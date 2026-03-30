@@ -202,3 +202,82 @@ function setTotal(val) {
 
 // 起動！
 loadData();
+
+// ... (既存の重量計算ロジック) ...
+
+// --- インストールガイド制御（インライン表示＆自動スクロール版） ---
+
+function hideInstallBar() {
+    const installArea = document.getElementById('install-area');
+    if (installArea) {
+        installArea.style.opacity = "0";
+        setTimeout(() => installArea.style.display = 'none', 300);
+    }
+}
+
+
+// 2. 選択肢をクリックした時の処理
+function handleInstallChoice(choice) {
+    const confirmBox = document.getElementById('inline-confirm');
+    
+    // ボックスを閉じる
+    confirmBox.style.maxHeight = "0";
+    confirmBox.style.opacity = "0";
+
+    if (choice) {
+        // 「追加する」ならiOS用ガイドを表示
+        setTimeout(() => showGuide(), 300);
+    } else {
+        // 「今はしない」なら一番上の黒いバーも消す
+        hideInstallBar();
+    }
+}
+
+// --- 以下、showGuide / closeGuide 等は変更なし ---
+function showGuide() {
+    const overlay = document.getElementById('guide-overlay');
+    const guide = document.getElementById('ios-guide');
+    overlay.style.display = 'block';
+    guide.style.display = 'block';
+    guide.style.pointerEvents = 'auto';
+    setTimeout(() => {
+        overlay.style.opacity = "1";
+        guide.style.opacity = "1";
+        guide.style.transform = "translate(-50%, -50%) scale(1)";
+    }, 10);
+}
+
+function closeGuide() {
+    const overlay = document.getElementById('guide-overlay');
+    const guide = document.getElementById('ios-guide');
+    overlay.style.opacity = "0";
+    guide.style.opacity = "0";
+    guide.style.transform = "translate(-50%, -45%) scale(0.95)";
+    setTimeout(() => {
+        overlay.style.display = 'none';
+        guide.style.display = 'none';
+        hideInstallBar();
+    }, 300);
+}
+// ページ読み込み時の初期化
+window.addEventListener('DOMContentLoaded', () => {
+    loadData();
+
+    const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+    const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const confirmBox = document.getElementById('inline-confirm');
+
+    if (confirmBox) {
+        // すでにアプリとして起動している、またはiOS以外なら最初から出さない
+        if (isStandalone || !isiOS) {
+            confirmBox.style.display = 'none';
+            confirmBox.style.maxHeight = '0';
+            confirmBox.style.opacity = '0';
+        }
+    }
+});
+
+// サービスワーカーの登録
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+}
