@@ -47,3 +47,16 @@
   /* 影の設定：右に3px、下に3px、ぼかしを2pxに抑え、不透明度を0.6（60%）にアップ */
   text-shadow: 2px 3px 2px rgba(0, 0, 0, 0.6);
 }
+
+
+/* 画面全体の最上部にステータスバー分の余白を強制的に作る */
+body {
+    /* iOSのノッチやステータスバーの高さを自動取得し、さらに 10px の余裕を持たせる */
+    padding-top: calc(env(safe-area-inset-top) + 10px) !important;
+}
+
+/* 固定（sticky）ヘッダーの位置調整 */
+.sticky {
+    /* 固定位置もステータスバーのすぐ下に調整 */
+    top: env(safe-area-inset-top) !important;
+}
