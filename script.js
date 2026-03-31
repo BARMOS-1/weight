@@ -129,11 +129,10 @@ function renderSelected() {
         return;
     }
 
-    arr.forEach(r => {
+   arr.forEach(r => {
         const div = document.createElement('div');
         div.className = 'p-2 flex justify-between items-center bg-white rounded-lg shadow-sm mb-1';
         
-        // ▼ 【3. ゴミ箱マーク】HTMLをゴミ箱アイコンに変更
         div.innerHTML = `
             <div class="flex-1 min-w-0 pr-2 leading-tight">
                 <div class="flex items-center gap-2">
@@ -143,11 +142,11 @@ function renderSelected() {
                 <div class="text-[9px] text-gray-400">単品: ${r.weight}kg</div>
             </div>
             <div class="flex items-center gap-3">
-                <div class="flex items-center gap-1">
+                <div class="flex items-center gap-2">
                     <input type="number" inputmode="numeric" pattern="[0-9]*" value="${r.qty || ''}" 
-                           class="w-10 border-2 border-gray-100 rounded py-1 text-center text-sm font-black" 
+                           class="w-20 border-2 border-gray-100 rounded-xl py-2 text-center text-base font-black shadow-sm focus:border-lime-500 outline-none" 
                            oninput="updateQty('${r.code}',this.value)" id="input-${r.code}">
-                    <span class="text-[10px] text-gray-500 font-bold">本</span>
+                    <span class="text-xs text-gray-500 font-bold">本</span>
                 </div>
                 <button class="text-red-400 p-1 active:scale-90 transition-transform" onclick="removeItem('${r.code}')">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
