@@ -1,10 +1,23 @@
 // sw.js
-self.addEventListener('fetch', function(event) {
-  // ネットワークからデータを取得する最小限の処理
+const CACHE_NAME = 'weight-sim-v1';
+const ASSETS = [
+  './',
+  './index.html',
+  './style.css',
+  './script.js',
+  './simulation.json'
+];
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+  );
+});
+
+self.addEventListener('fetch', (event) => {
   event.respondWith(
-    fetch(event.request).catch(() => {
-      // オフライン時のエラー回避用（空のレスポンスを返すなど）
-      return new Response('Offline');
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
     })
   );
 });

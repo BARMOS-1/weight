@@ -209,3 +209,46 @@ function closeGuide() {
 }
 
 window.addEventListener('DOMContentLoaded', loadData);
+
+
+
+
+// script.js の末尾に追加
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('SW registered'))
+            .catch(err => console.error('SW registration failed', err));
+    });
+}
+
+// Android用のインストールバナー制御
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // 「ホーム画面に追加」のバナーを表示する
+    const confirmBox = document.getElementById('inline-confirm');
+    if (confirmBox) {
+        confirmBox.style.maxHeight = "200px";
+        confirmBox.style.opacity = "1";
+    }
+});
+
+// handleInstallChoice関数の中身を更新
+window.handleInstallChoice = async (choice) => {
+    const confirmBox = document.getElementById('inline-confirm');
+    confirmBox.style.maxHeight = "0";
+    confirmBox.style.opacity = "0";
+
+    if (choice) {
+        if (deferredPrompt) {
+            // Androidの場合
+            deferredPrompt.prompt();
+            deferredPrompt = null;
+        } else {
+            // iOSの場合や、バナーがまだ出せない場合
+            showGuide();
+        }
+    }
+};
