@@ -208,10 +208,29 @@ function closeGuide() {
     }, 300);
 }
 
-window.addEventListener('DOMContentLoaded', loadData);
+window.addEventListener('DOMContentLoaded', () => {
+    // データの読み込み
+    loadData();
 
+    // --- ここからiPhone用の表示ロジックを追加 ---
+    // 1. ホーム画面から起動しているかチェック
+    const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+    
+    // 2. iOS(iPhone/iPad)かどうかチェック
+    const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
+    const confirmBox = document.getElementById('inline-confirm');
 
+    // まだホーム画面に追加されていない場合
+    if (!isStandalone) {
+        // iPhone/Safariなら即座に「追加しますか？」を表示
+        if (isiOS && confirmBox) {
+            confirmBox.style.maxHeight = "200px";
+            confirmBox.style.opacity = "1";
+        }
+    }
+    // --- ここまで ---
+});
 
 // script.js の末尾に追加
 if ('serviceWorker' in navigator) {
