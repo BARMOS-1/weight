@@ -1,87 +1,448 @@
 <!doctype html>
 <html lang="ja">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-    <title>重量シュミレーション</title>
-    <link rel="manifest" href="simulation.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover" />
+  <title>機材検索 </title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+  
+  <link rel="stylesheet" href="app.css?v=1.0.1">
 </head>
-<body class="bg-gray-400 text-gray-800 antialiased">
 
-<div id="loadingOverlay" class="fixed inset-0 bg-white/80 backdrop-blur-sm z-[100] flex items-center justify-center font-bold text-slate-600">
-    <div class="flex flex-col items-center gap-2">
-        <div class="w-8 h-8 border-4 border-lime-500 border-t-transparent rounded-full animate-spin"></div>
-        読み込み中…
-    </div>
-</div>
+<body class="bg-blue-80 text-slate-900 select-none antialiased">
 
-<div class="max-w-3xl mx-auto px-4 flex flex-col">
+<div class="w-full max-w-screen-xl mx-auto min-h-screen flex flex-col bg-white shadow-xl">
+  <header class="sticky top-0 bg-slate-300 backdrop-blur-lg z-40 px-5 pb-4 border-b border-slate-300">
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-extrabold tracking-tight text-slate-800">機材検索</h1>
+    <span id="hit-count" class="bg-blue-100 text-blue-600 text-xs font-bold px-2.5 py-1 rounded-full">-- 件</span>
+  </div>
+
+<div id="install-area" class="mb-6 bg-blue-600 rounded-[32px] p-6 shadow-xl shadow-blue-900/20 transition-all duration-300" style="display:none;">
+  <div class="flex flex-col items-center text-center gap-5">
     
-   <div class="sticky top-0 z-40 bg-gray-400 pt-2 pb-2 flex flex-col gap-2">
-        
-        <header class="text-center pt-2">
-            <h1 class="text-xl font-black title-shadow" style="color: rgb(161,193,44);">重量シュミレーション</h1>
-            
-            <div id="inline-confirm" class="max-w-md mx-auto overflow-hidden transition-all duration-300" style="max-height: 0px; opacity: 0;">
-                <div class="mt-2 p-3 bg-slate-900 text-white rounded-2xl shadow-xl border border-slate-700 text-left">
-                    <p class="text-[10px] font-bold mb-2">ホーム画面に追加しますか？</p>
-                    <div class="flex gap-2">
-                        <button onclick="handleInstallChoice(false)" class="flex-1 py-1 bg-slate-700 rounded-lg text-[10px]">今はしない</button>
-                        <button onclick="handleInstallChoice(true)" class="flex-1 py-1 bg-lime-500 text-slate-900 rounded-lg text-[10px] font-black">追加</button>
-                    </div>
-                </div>
-            </div>
-            <p class="text-white/90 text-[10px] mt-1 title-shadow">機材を検索して、積載重量を確認できます。</p>
-        </header>
-
-        <div class="p-3 rounded-2xl shadow-lg gradient-border bg-white text-center">
-            <div class="flex flex-col items-center gap-1 mb-1">
-                <div class="text-[10px] font-black uppercase text-gray-400">Total 重量</div>
-                <div class="text-4xl font-black italic text-slate-800 leading-none">
-                    <span id="totalWeight">0.00</span><small class="text-lg ml-1 not-italic">t</small>
-                </div>
-            </div>
-            <div class="relative w-2/3 h-6 mx-auto px-1">
-                <div class="absolute top-0 left-0 w-full flex justify-between text-[8px] font-bold text-gray-400 px-1">
-                    <span>0</span><span>10</span><span>20 t</span>
-                </div>
-                <div class="absolute bottom-0 left-0 w-full h-3 bg-gray-100 rounded-full border border-gray-200 shadow-inner">
-                    <div id="weightMeter" class="h-full transition-all duration-700 ease-out" style="width:0%; background-color: #a1c12c;"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="flex flex-col gap-2 pb-1">
-            <select id="categoryFilter" class="w-full px-4 py-3 rounded-2xl border-2 border-gray-100 bg-white text-gray-600 text-sm font-bold shadow-sm outline-none appearance-none cursor-pointer">
-                <option value="">すべてのカテゴリ</option>
-            </select>
-            <div class="relative group">
-                <input type="search" id="searchInput" placeholder="機材名・コードで検索..." autocomplete="off"
-                       class="px-5 py-3 rounded-2xl w-full border-2 border-gray-100 focus:border-lime-500 outline-none shadow-sm text-sm font-medium"/>
-                <div id="searchSuggestion" class="hidden absolute top-full left-0 w-full bg-white border-2 border-gray-100 rounded-xl shadow-2xl max-h-[250px] overflow-y-auto z-50 mt-1 p-1"></div>
-            </div>
-        </div>
+    <div class="space-y-2">
+      <div class="text-3xl">📱</div>
+      <h2 class="text-white text-lg font-black tracking-tight">
+        アプリ版をホーム画面に追加
+      </h2>
+      <p class="text-blue-100 text-[11px] font-medium leading-relaxed opacity-90">
+        全画面表示で、機材検索がもっとスムーズに。<br>オフラインでも使いやすくなります。
+      </p>
     </div>
-    <div id="selectedList" class="flex flex-col gap-2 pb-20 mt-2 min-h-[50vh]">
-        <div class="text-center py-10 text-white/50 text-xs border-2 border-dashed border-white/20 rounded-2xl font-bold">
-            機材が選択されていません
-        </div>
+    
+    <div class="flex flex-col w-full gap-3">
+      <button onclick="openInstallDialog()" 
+              class="w-full bg-white text-blue-700 py-3.5 rounded-2xl text-sm font-black shadow-lg active:scale-[0.97] transition-all">
+        今すぐホーム画面に追加する
+      </button>
+      
+      <button onclick="hideInstallBar()" 
+              class="text-white/60 text-xs font-bold hover:text-white transition-colors py-1">
+        今はしない
+      </button>
     </div>
-</div>
 
-<div id="guide-overlay" onclick="closeGuide()" style="display:none; position:fixed; inset:0; background:rgba(15, 23, 42, 0.7); z-index:9999; backdrop-filter:blur(4px); opacity:0; transition: opacity 0.3s ease;"></div>
-<div id="ios-guide" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -45%) scale(0.95); width:90%; max-width:360px; z-index:10000; opacity:0; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none;">
-  <div class="bg-white rounded-[30px] p-6 shadow-2xl relative text-center">
-    <h3 class="text-lg font-black text-slate-800 mb-4">ホーム画面に追加</h3>
-    <button onclick="closeGuide()" class="w-full py-3 bg-slate-900 text-white text-sm font-black rounded-xl">OK</button>
   </div>
 </div>
+  
+  <div class="flex flex-col md:flex-row gap-3">
+    <div class="relative flex-[2]">
+      <input id="q" type="search" placeholder="機材名・コードで検索..." 
+             class="w-full pl-4 pr-10 py-3 rounded-2xl bg-slate-100 border-none focus:ring-2 focus:ring-blue-500 transition-all text-base" />
+    </div>
+    <div class="flex flex-1 gap-2">
+      <select id="cat" class="w-full px-4 py-2 rounded-xl bg-slate-100 border-none text-sm font-medium text-slate-600 focus:ring-2 focus:ring-blue-500"></select>
+    </div>
+  </div>
+</header>
 
-<script src="script.js"></script>
+ <main class="flex-1 bg-slate-300">
+  <div id="list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+      <div id="loading-state" class="p-10 text-center text-slate-400">
+        <div class="animate-pulse flex flex-col items-center">
+          <div class="w-12 h-12 bg-slate-200 rounded-full mb-4"></div>
+          <p class="text-sm">データを読み込み中...</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+
+  <footer class="p-4 safe-area-bottom text-center">
+    <p class="text-[10px] text-slate-300 uppercase tracking-widest">Equipment Search System v2.0</p>
+  </footer>
+</div>
+
+<div id="modal" onclick="closeModal()">
+  <div id="modalContent" onclick="event.stopPropagation()"></div>
+</div>
+
+<script>
+let rawData = [], viewData = [], colMap = {};
+const el = id => document.getElementById(id);
+
+// 1. 起動時にキャッシュをチェック
+async function loadData() {
+  const url = "https://script.google.com/macros/s/AKfycby0faWengFZ9TdfnX3LX7JBCbGEy5A1Pw4308MJSWISOLDU2d8vjJcQwmOCoOHBwji7Sg/exec";
+  const CACHE_KEY = 'equipment_data_cache';
+
+  // ローカルストレージからデータを読み込む
+  const cachedData = localStorage.getItem(CACHE_KEY);
+  if (cachedData) {
+    rawData = JSON.parse(cachedData);
+    initAfterLoad(); // キャッシュがあれば即座に表示
+    console.log("Cache loaded: Instant display");
+  }
+
+  // 裏側で最新データを取得（バックグラウンド更新）
+  try {
+    const res = await fetch(url);
+    const newData = await res.json();
+    
+    // データが更新されていた場合、またはキャッシュがなかった場合のみ再描画
+    if (JSON.stringify(newData) !== cachedData) {
+      rawData = newData;
+      localStorage.setItem(CACHE_KEY, JSON.stringify(newData));
+      initAfterLoad();
+      console.log("Data updated from Spreadsheet");
+    }
+  } catch (e) {
+    if (!cachedData) {
+      el('list').innerHTML = `<div class="p-10 text-center text-red-500">通信エラー（初回はネット接続が必要です）</div>`;
+    }
+  }
+}
+
+function initAfterLoad() {
+  normalizeColumns();
+  bindCategoryOptions();
+  applyFilters();
+}
+
+function normalizeColumns(){
+  // カラムマッピングの定義
+  const map={
+    code:['機材コード','code'], category:['区分','category'], name:['機材名','name'],
+    weight:['単品重量（kg)','weight'], id:['機材ＣＤ','機材CD','id'], stock:['結束数（本）','stock']
+  };
+  for(const key in map) colMap[key]=map[key].find(c=>c in rawData[0])||'';
+  
+  colMap.baseRegions={
+    "North": ['宮城仙台第二Base','青森東通Base','福島広野Base','岩手盛岡Base'],
+    "East": ['神奈川愛川Base','茨城つくばBase','茨城中央Base','埼玉久喜Base','千葉大木戸Base','千葉市原Base'],
+    "Central": ['東海木曽岬Base','静岡吉田Base','福井鯖江Base','長野飯田Base','石川金沢Base'],
+    "Shin-Etsu": ['信州長野Base','新潟長岡Base','新潟横越Base'],
+    "West": ['兵庫神戸Base','大阪枚方Base','Lab.West','大阪摂津Base','滋賀近江八幡Base','兵庫東条Base','和歌山桃山Base'],
+    "South": ['香川さぬきBase','広島志和Base','沖縄那覇Base']
+  };
+}
+
+function bindCategoryOptions(){
+  const set=new Set();
+  rawData.forEach(r=> { if(r[colMap.category]) set.add(r[colMap.category]) });
+  const sortedCats = [...set].sort();
+  el('cat').innerHTML='<option value="">すべてのカテゴリ</option>'+sortedCats.map(v=>`<option value="${v}">${v}</option>`).join('');
+}
+
+// フィルタリング処理
+const runSearch = _.debounce(() => { applyFilters(); }, 250);
+el('q').addEventListener('input', runSearch);
+el('cat').addEventListener('change', runSearch);
+
+function applyFilters(){
+  const kw = (el('q').value || '').toLowerCase();
+  const cat = el('cat').value;
+  
+  viewData = rawData.filter(r => {
+    if(cat && r[colMap.category] !== cat) return false;
+    const name = (r[colMap.name] || '').toLowerCase();
+    const code = (r[colMap.id] || '').toLowerCase();
+    return name.includes(kw) || code.includes(kw);
+  });
+  render();
+}
+
+// リスト描画
+// リスト描画（カードデザイン：影強化版）
+function render(){
+  const listEl = el('list');
+  el('hit-count').textContent = `${viewData.length} 件`;
+
+  if(viewData.length === 0) {
+    listEl.innerHTML = `
+      <div class="col-span-full p-20 text-center bg-white rounded-3xl border-2 border-dashed border-slate-200 shadow-inner">
+        <p class="text-slate-400 text-sm font-bold flex flex-col items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          該当する機材が見つかりません
+        </p>
+      </div>`;
+    return;
+  }
+
+listEl.innerHTML = viewData.map((r, i) => `
+    <div class="group bg-white border-2 border-slate-200 rounded-2xl p-5 
+                /* 影をより深く、輪郭を際立たせる */
+                shadow-[0_8px_30px_rgb(0,0,0,0.04)] 
+                /* ホバー時に枠線の色を青く、影を強調 */
+                hover:border-blue-500 hover:shadow-xl hover:shadow-blue-900/10
+                hover:-translate-y-1 active:scale-[0.98] 
+                transition-all duration-300 cursor-pointer flex flex-col h-full relative overflow-hidden" 
+         onclick="showModal(${i})">
+      
+      <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-slate-200 group-hover:bg-blue-500 transition-colors"></div>
+
+      <div class="pl-2"> <div class="flex items-center justify-between mb-3">
+          <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-100 uppercase shadow-sm">
+            ${r[colMap.id]}
+          </span>
+          <span class="text-[10px] font-bold text-slate-400 tracking-widest">${r[colMap.category]}</span>
+        </div>
+
+        <div class="flex-1 mb-6">
+          <h3 class="font-black text-slate-800 text-lg leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
+            ${r[colMap.name]}
+          </h3>
+        </div>
+        
+        <div class="flex items-center justify-between pt-4 border-t-2 border-slate-50 mt-auto">
+          <div class="flex gap-4">
+            <div class="text-center">
+              <p class="text-[9px] text-slate-400 font-black uppercase mb-0.5">単重</p>
+              <p class="text-sm font-bold text-slate-700">${r[colMap.weight]}<small class="ml-0.5 font-normal">kg</small></p>
+            </div>
+            <div class="text-center">
+              <p class="text-[9px] text-slate-400 font-black uppercase mb-0.5">結束数</p>
+              <p class="text-sm font-bold text-slate-700">${r[colMap.stock]}<small class="ml-0.5 font-normal">pcs</small></p>
+            </div>
+          </div>
+          <div class="text-blue-500 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// モーダル表示
+function showModal(idx){
+  const r = viewData[idx];
+  let baseHTML = '';
+  
+  for(const region in colMap.baseRegions){
+    baseHTML += `
+      <div class="mt-4 bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+        <h4 class="text-sm font-bold text-slate-900 mb-3">${region}</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
+    `;
+    colMap.baseRegions[region].forEach(b => {
+  const val = r[b] || '–';
+  
+  // 色分けの判定ロジックを3色に拡張
+      let colorClass = '';
+      if (val === '〇') {
+        // 〇：青色
+        colorClass = 'bg-blue-50 text-blue-700 border-blue-200';
+      } else if (val === '△') {
+        // △：黄色（ご要望箇所）
+        colorClass = 'bg-yellow-50 text-yellow-800 border-yellow-300';
+      } else {
+        // それ以外（×、–、空欄など）：赤色
+        colorClass = 'bg-red-50 text-red-700 border-red-200';
+      }
+      baseHTML += `
+        <div class="border ${colorClass} rounded-md py-2 px-1 text-center flex flex-col items-center justify-center min-h-[56px]">
+          <span class="text-[11px] font-medium leading-tight mb-1 break-all">${b.replace('Base','')}</span>
+          <span class="text-xs font-bold">${val}</span>
+        </div>`;
+    });
+    baseHTML += `</div></div>`;
+  }
+
+  el('modalContent').innerHTML = `
+    <div class="sticky top-0 bg-white z-30 pt-5 pb-5 border-b border-slate-200 rounded-t-[20px] -mt-6 -mx-6 px-6 shadow-sm overflow-visible
+                before:content-[''] before:absolute before:top-[-100px] before:left-0 before:right-0 before:h-[101px] before:bg-white before:z-[-1]">
+      
+      <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-5 sm:hidden"></div>
+
+      <button onclick="closeModal()" class="absolute top-4 right-4 w-9 h-9 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center font-bold hover:bg-slate-200 z-40">✕</button>
+
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl font-black text-slate-950 tracking-tight leading-tight pr-10 mb-5">${r[colMap.name]}</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2 text-sm">
+          <div class="flex items-end gap-2">
+            <span class="text-slate-600 flex-shrink-0 font-medium tracking-tighter">区分:</span>
+            <div class="flex-1 border-b border-dotted border-slate-300 mb-1"></div>
+            <span class="font-bold text-slate-900 flex-shrink-0">** ${r[colMap.category]} **</span>
+          </div>
+          <div class="flex items-end gap-2">
+            <span class="text-slate-600 flex-shrink-0 font-medium tracking-tighter">機材CD:</span>
+            <div class="flex-1 border-b border-dotted border-slate-300 mb-1"></div>
+            <span class="font-bold text-slate-900 flex-shrink-0">${r[colMap.id]}</span>
+          </div>
+          <div class="flex items-end gap-2">
+            <span class="text-slate-600 flex-shrink-0 font-medium tracking-tighter">単品重量 (kg) :</span>
+            <div class="flex-1 border-b border-dotted border-slate-300 mb-1"></div>
+            <span class="font-bold text-slate-900 flex-shrink-0">${r[colMap.weight]}</span>
+          </div>
+          <div class="flex items-end gap-2">
+            <span class="text-slate-600 flex-shrink-0 font-medium tracking-tighter">結束数 (本) :</span>
+            <div class="flex-1 border-b border-dotted border-slate-300 mb-1"></div>
+            <span class="font-bold text-slate-900 flex-shrink-0">${r[colMap.stock]}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto pt-12 relative z-10">
+      <div class="bg-white -mx-6 px-6 pb-6">
+        <h3 class="text-lg font-bold text-slate-950 mb-2 flex items-center gap-2">
+          <span class="w-1 h-4 bg-blue-500 rounded-full"></span>取り扱いBase
+        </h3>
+        <div class="space-y-4">
+          ${baseHTML}
+        </div>
+      </div>
+    </div>
+    <div class="h-8"></div>
+  `;
+  
+  const modal = el('modal');
+  modal.style.display = 'flex';
+  setTimeout(() => modal.classList.add('show'), 10);
+}
+
+// --- 1. モーダルを閉じる（既存） ---
+function closeModal(){
+  const modal = el('modal');
+  modal.classList.remove('show');
+  setTimeout(() => { modal.style.display = 'none'; }, 300);
+}
+
+// インストールバーを一時的に隠す関数
+function hideInstallBar() {
+  const installArea = document.getElementById('install-area');
+  if (installArea) installArea.style.display = 'none';
+}
+
+// 追加ボタンを押した時のYes/Noダイアログ
+function openInstallDialog() {
+  showGuide(); 
+}
+
+// ガイドを表示する (今回作成したもの)
+function showGuide() {
+  const overlay = document.getElementById('guide-overlay');
+  const guide = document.getElementById('ios-guide');
+  
+  overlay.style.display = 'block';
+  guide.style.display = 'block';
+  guide.style.pointerEvents = 'auto'; // これを追加（クリックできるようにする）
+  
+  setTimeout(() => {
+    overlay.style.opacity = "1";
+    guide.style.opacity = "1";
+    guide.style.transform = "translate(-50%, -50%) scale(1)"; // 中央にぴったり配置
+  }, 10);
+}
+
+// ガイドを閉じる (今回作成したもの)
+function closeGuide() {
+  const overlay = document.getElementById('guide-overlay');
+  const guide = document.getElementById('ios-guide');
+  overlay.style.opacity = "0";
+  guide.style.opacity = "0";
+  guide.style.transform = "translate(-50%, -45%) scale(0.95)";
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    guide.style.display = 'none';
+    hideInstallBar();
+  }, 300);
+}
+
+// ページ読み込み時の判定（既存の処理を微調整）
+window.addEventListener('DOMContentLoaded', () => {
+  loadData();
+
+  const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+  const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const installArea = document.getElementById('install-area');
+
+  if (installArea) {
+    if (isStandalone) {
+      installArea.style.display = 'none';
+    } else {
+      // テスト時はここを 'block' に。本番は isiOS ? 'block' : 'none'
+      installArea.style.display = isiOS ? 'block' : 'none';
+    }
+  }
+});
+
+// --- 5. サービスワーカー ---
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+</script>
+
+<div id="guide-overlay" onclick="closeGuide()" 
+     style="display:none; position:fixed; inset:0; background:rgba(15, 23, 42, 0.7); z-index:9999; backdrop-filter:blur(4px); opacity:0; transition: opacity 0.3s ease;">
+</div>
+
+<div id="ios-guide" 
+     style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -45%) scale(0.95); width:90%; max-width:360px; z-index:10000; opacity:0; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none;">
+  
+  <div class="bg-white rounded-[40px] p-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] relative text-center border border-white/20">
+    
+    <button onclick="closeGuide()" class="absolute top-6 right-6 text-slate-300 hover:text-slate-500 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+    </button>
+
+    <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-50 rounded-full mb-6">
+      <span class="text-4xl">📱</span>
+    </div>
+    
+    <h3 class="text-xl font-black text-slate-800 mb-8">ホーム画面に追加</h3>
+    
+    <div class="text-left space-y-4 mb-8">
+      <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-black flex-shrink-0 shadow-md">1</div>
+        <p class="text-[13px] text-slate-700 font-bold flex-1 leading-tight">
+          下の<strong>「共有ボタン」</strong>をタップ
+        </p>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+          <polyline points="16 6 12 2 8 6"></polyline>
+          <line x1="12" y1="2" x2="12" y2="15"></line>
+        </svg>
+      </div>
+
+      <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-black flex-shrink-0 shadow-md">2</div>
+        <p class="text-[13px] text-slate-700 font-bold flex-1 leading-tight">
+          <strong>「ホーム画面に追加」</strong>を選択
+        </p>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <rect x="2" y="2" width="20" height="20" rx="4" stroke-width="1.5"></rect>
+        </svg>
+      </div>
+    </div>
+
+    <button onclick="closeGuide()" class="w-full py-4 bg-[#0f172a] text-white text-base font-black rounded-2xl active:scale-[0.95] transition-all shadow-lg shadow-slate-200">
+      OK
+    </button>
+  </div>
+</div>
 </body>
 </html>

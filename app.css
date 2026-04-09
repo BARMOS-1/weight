@@ -1,0 +1,128 @@
+/* 基本設定 */
+body { 
+  -webkit-tap-highlight-color: transparent; 
+  overscroll-behavior-y: none; 
+  background-color: #feffff; 
+}
+
+/* 変数定義（セーフエリア） */
+:root {
+  --sat: env(safe-area-inset-top);
+  --sab: env(safe-area-inset-bottom);
+}
+
+/* ヘッダー：ステータスバーを避ける */
+header {
+  padding-top: calc(var(--sat) + 1rem) !important;
+}
+
+/* リスト部分：ヘッダーの下から開始 */
+main {
+  padding-bottom: var(--sab);
+}
+
+/* フッター：ホームバーを避ける */
+.safe-area-bottom {
+  padding-bottom: calc(var(--sab) + 1rem);
+}
+
+/* モーダル基本設定 */
+#modal { 
+  position: fixed; 
+  inset: 0; 
+  background: rgba(0,0,0,0.6); 
+  display: none; 
+  z-index: 1000; 
+  opacity: 0; 
+  transition: opacity 0.3s ease; 
+}
+
+#modal.show { 
+  display: flex; 
+  align-items: flex-end; 
+  opacity: 1; 
+}
+
+/* モーダルの中身：上部をデバイスの端まで広げつつ、中身はセーフエリアを守る */
+#modalContent { 
+  background: white; 
+  width: 100%; 
+  max-height: 92vh; 
+  border-radius: 24px 24px 0 0; 
+  padding: 24px 24px calc(var(--sab) + 24px) 24px; 
+  overflow-y: auto; 
+  transform: translateY(100%); 
+  transition: transform 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+#modal.show #modalContent { 
+  transform: translateY(0); 
+}
+
+/* スクロールバー非表示 */
+::-webkit-scrollbar { display: none; }
+
+/* 検索窓のiOSデフォルトスタイル解除 */
+input[type="search"] {
+  -webkit-appearance: none;
+}
+
+
+
+
+/* --- インストールガイド & ダイアログの追加設定 --- */
+
+/* 背景を暗くするレイヤー（既存のモーダルと似た質感に） */
+#guide-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  backdrop-filter: blur(4px); /* 背景を少しぼかして高級感を出す */
+}
+
+/* iPhone用ガイドパネル：画面下から浮かび上がるデザイン */
+/* --- 修正版：iPhone用ガイドパネル --- */
+#ios-guide {
+  display: none;
+  position: fixed;
+  /* 位置設定 */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 中央寄せ */
+  
+  width: 90%;
+  max-width: 400px;
+  z-index: 10001;
+  background: none; 
+  box-shadow: none;
+  border: none;
+  padding: 0;
+}
+
+/* アニメーション（ふわっと表示） */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translate(-50%, 20px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+#ios-guide.show {
+  display: block;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* インストールボタンのコンテナ（既存のリストやフッターと間隔を空ける） */
+#install-area {
+  padding: 0 24px 24px 24px;
+}
+
+#install-area {
+  /* ヘッダーの中に入れるので sticky top は不要になります（親のheaderがstickyなので） */
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+/* モーダルのz-indexが1000なので、ガイドはそれより上に設定 */
+#guide-overlay { z-index: 10000; }
+#ios-guide { z-index: 10001; }
